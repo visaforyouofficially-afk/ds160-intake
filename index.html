@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS-160 Intake</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#F2F1EA;
+  --paper:#FBFAF6;
+  --ink:#1C2B3A;
+  --ink-soft:#5B6672;
+  --line:#D8D3C4;
+  --stamp:#B3241C;
+  --stamp-soft:#F2DEDB;
+  --brass:#9C7A2E;
+  --brass-soft:#EFE6CE;
+  --ok:#2E6B3E;
+  --ok-soft:#DEEBDF;
+  --danger:#B3241C;
+  --danger-soft:#F2DEDB;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0;letter-spacing:-0.01em;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;font-size:14px;}
+
+.shell{max-width:1040px;margin:0 auto;padding:0 20px 60px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--line);margin-bottom:28px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{width:34px;height:34px;border:1.5px solid var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:14px;flex-shrink:0;}
+.brand-text h1{font-size:19px;}
+.brand-text p{margin:0;font-size:11px;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase;}
+.lang-switch{display:flex;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--paper);}
+.lang-switch button{border:none;background:transparent;padding:6px 13px;font-size:12.5px;color:var(--ink-soft);letter-spacing:.03em;}
+.lang-switch button.active{background:var(--ink);color:#fff;}
+
+.intro{text-align:center;padding:50px 0 20px;}
+.intro-stamp{width:112px;height:112px;margin:0 auto 26px;border:2.5px solid var(--stamp);border-radius:50%;display:flex;align-items:center;justify-content:center;transform:rotate(-8deg);color:var(--stamp);}
+.intro-stamp span{font-family:'Fraunces',serif;font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;line-height:1.5;}
+.intro h2{font-size:30px;max-width:520px;margin:0 auto 14px;}
+.intro p{color:var(--ink-soft);max-width:460px;margin:0 auto 30px;font-size:15px;line-height:1.6;}
+.btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:8px;padding:12px 22px;font-size:14px;font-weight:500;}
+.btn-primary{background:var(--ink);color:#fff;}
+.btn-primary:hover{background:#0f1c29;}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+.btn-ghost:hover{border-color:var(--ink);}
+.btn-stamp{background:var(--stamp);color:#fff;}
+.btn-stamp:hover{background:#8f1c16;}
+.btn[disabled]{opacity:.5;cursor:not-allowed;}
+
+.wizard{display:grid;grid-template-columns:230px 1fr;gap:0;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-height:520px;}
+.rail{border-right:1px solid var(--line);padding:22px 0;}
+.rail-item{display:flex;align-items:center;gap:11px;padding:10px 20px;font-size:13px;color:var(--ink-soft);cursor:pointer;border-left:2px solid transparent;}
+.rail-item.current{color:var(--ink);border-left-color:var(--stamp);background:var(--stamp-soft);font-weight:500;}
+.rail-item.done{color:var(--ink);}
+.rail-stamp{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.rail-item.done .rail-stamp{border-color:var(--ok);color:var(--ok);background:var(--ok-soft);}
+.rail-item.current .rail-stamp{border-color:var(--stamp);color:var(--stamp);}
+
+.panel{padding:32px 34px;}
+.panel h2{font-size:21px;margin-bottom:4px;}
+.panel .step-count{font-size:12px;color:var(--ink-soft);margin-bottom:22px;letter-spacing:.03em;}
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;}
+.field input[type=text],.field input[type=email],.field input[type=tel],.field input[type=date],.field select,.field textarea{
+  width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);
+}
+.field input[type=file]{width:100%;padding:9px 11px;border:1px dashed var(--brass);border-radius:7px;background:var(--brass-soft);font-size:13px;}
+.field textarea{min-height:70px;resize:vertical;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--brass);outline-offset:0;border-color:var(--brass);}
+.radio-row{display:flex;gap:10px;}
+.radio-pill{flex:1;text-align:center;padding:9px 8px;border:1px solid var(--line);border-radius:7px;font-size:13.5px;background:#fff;}
+.radio-pill.selected{background:var(--ink);color:#fff;border-color:var(--ink);}
+.conditional{margin-top:12px;padding:14px;background:var(--bg);border-left:2px solid var(--brass);border-radius:0 7px 7px 0;}
+.required-mark{color:var(--stamp);margin-left:2px;}
+
+.footer-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 34px;border-top:1px solid var(--line);}
+.footer-nav .progress-text{font-size:12px;color:var(--ink-soft);}
+
+.review-group{margin-bottom:20px;}
+.review-group h3{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--brass);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.review-group h3 button{font-size:11px;text-decoration:underline;color:var(--ink-soft);background:none;border:none;text-transform:none;letter-spacing:0;}
+.review-row{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px;}
+.review-row .rk{color:var(--ink-soft);flex-shrink:0;}
+.review-row .rv{text-align:right;font-weight:500;}
+
+.success{text-align:center;padding:56px 0;}
+.success-stamp{width:130px;height:130px;margin:0 auto 24px;border:3px solid var(--ok);border-radius:50%;display:flex;align-items:center;justify-content:center;transform:rotate(-6deg);color:var(--ok);animation:slam .45s cubic-bezier(.2,1.4,.4,1);}
+@keyframes slam{0%{transform:scale(2.2) rotate(-6deg);opacity:0;}100%{transform:scale(1) rotate(-6deg);opacity:1;}}
+.success-stamp span{font-family:'Fraunces',serif;font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;}
+.ref-code{display:inline-block;margin:14px 0 22px;padding:8px 16px;background:var(--paper);border:1px dashed var(--brass);border-radius:7px;font-size:15px;letter-spacing:.04em;}
+
+.error-box{background:var(--danger-soft);color:#7a1712;border-radius:8px;padding:12px 14px;font-size:13px;margin:0 34px 18px;}
+.note-box{background:var(--brass-soft);border-radius:8px;padding:12px 14px;font-size:12.5px;color:#5c4a1e;margin:16px 0;line-height:1.5;}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:760px){
+  .wizard{grid-template-columns:1fr;}
+  .rail{display:flex;overflow-x:auto;padding:14px;border-right:none;border-bottom:1px solid var(--line);gap:4px;}
+  .rail-item{flex-shrink:0;border-left:none;border-bottom:2px solid transparent;padding:8px 12px;}
+  .rail-item.current{border-bottom-color:var(--stamp);}
+  .panel{padding:22px 18px;}
+  .footer-nav{padding:14px 18px;}
+}
+</style>
+</head>
+<body>
+<div class="shell" id="root"></div>
+
+<script>
+const LANGS = { en:'English', ru:'Русский', ro:'Română' };
+
+const UI = {
+  en:{appTitle:'DS-160 Intake',appSub:'Visa Application Questionnaire',introTitle:'Answer a few questions in your own language — we’ll turn it into your DS-160.',introBody:'This form mirrors the structure of the official U.S. nonimmigrant visa application. Fill it out at your own pace; a consultant will review your answers and prepare the official filing with you.',start:'Start application',back:'Back',next:'Continue',review:'Review answers',submit:'Submit application',submitting:'Sending...',edit:'Edit',step:'Step',of:'of',yes:'Yes',no:'No',successTitle:'Application received',successBody:'Your answers have been sent. Your consultant will contact you to confirm the details and proceed with your DS-160.',refLabel:'Reference number',newApp:'Fill out another application',securityNote:'This is a shortened sample of the security & background section. The official DS-160 has about 40 such questions — the full set can be added once the structure is approved.',errorMsg:'Something went wrong sending your application. Please try again, or contact your consultant directly.',uploadHint:'JPG, PNG or PDF, up to 8MB'},
+  ru:{appTitle:'DS-160 — Анкета',appSub:'Опросник для визовой заявки',introTitle:'Ответьте на несколько вопросов на своём языке — мы оформим их в DS-160.',introBody:'Анкета повторяет структуру официальной формы неиммиграционной визы США. Заполняйте в удобном темпе — консультант проверит ответы и поможет подготовить официальную заявку.',start:'Начать заполнение',back:'Назад',next:'Далее',review:'Проверить ответы',submit:'Отправить анкету',submitting:'Отправка...',edit:'Изменить',step:'Шаг',of:'из',yes:'Да',no:'Нет',successTitle:'Анкета получена',successBody:'Ваши ответы отправлены. Консультант свяжется с вами, чтобы уточнить детали и продолжить оформление DS-160.',refLabel:'Номер обращения',newApp:'Заполнить ещё одну анкету',securityNote:'Это сокращённый пример раздела безопасности и биографии. В официальной DS-160 около 40 таких вопросов — полный список можно добавить после утверждения структуры.',errorMsg:'Не удалось отправить анкету. Попробуйте ещё раз или свяжитесь с консультантом напрямую.',uploadHint:'JPG, PNG или PDF, до 8 МБ'},
+  ro:{appTitle:'DS-160 — Chestionar',appSub:'Formular pentru cererea de viză',introTitle:'Răspunde la câteva întrebări în limba ta — le vom transforma în DS-160.',introBody:'Acest formular urmează structura cererii oficiale de viză americană de nonimigrant. Completează în ritmul tău — un consultant îți va verifica răspunsurile și va pregăti dosarul oficial.',start:'Începe completarea',back:'Înapoi',next:'Continuă',review:'Verifică răspunsurile',submit:'Trimite formularul',submitting:'Se trimite...',edit:'Editează',step:'Pas',of:'din',yes:'Da',no:'Nu',successTitle:'Formular primit',successBody:'Răspunsurile tale au fost trimise. Consultantul te va contacta pentru a confirma detaliile și a continua cu DS-160.',refLabel:'Număr de referință',newApp:'Completează un alt formular',securityNote:'Acesta este un exemplu scurtat al secțiunii de securitate. DS-160 oficial are aproximativ 40 de întrebări similare — lista completă poate fi adăugată după aprobarea structurii.',errorMsg:'Trimiterea a eșuat. Încearcă din nou sau contactează direct consultantul.',uploadHint:'JPG, PNG sau PDF, până la 8MB'}
+};
+
+const L3 = (en,ru,ro)=>({en,ru,ro});
+
+const SECTIONS = [
+ { id:'personal1', title:L3('Personal Information I','Личные данные I','Date personale I'), fields:[
+   {id:'surname',type:'text',required:true,label:L3('Surname (as in passport)','Фамилия (как в паспорте)','Numele de familie (ca în pașaport)')},
+   {id:'givenNames',type:'text',required:true,label:L3('Given names','Имя и отчество','Prenumele')},
+   {id:'fullNameNative',type:'text',label:L3('Full name in native alphabet (if different)','Полное имя в родном алфавите (если отличается)','Numele complet în alfabetul nativ (dacă diferă)')},
+   {id:'otherNames',type:'radio',label:L3('Have you ever used other names?','Использовали ли вы другие имена?','Ai folosit alte nume?')},
+   {id:'otherNamesList',type:'text',conditional:{on:'otherNames',eq:'yes'},label:L3('List all other names used','Укажите все использованные имена','Menționează toate numele folosite')},
+   {id:'sex',type:'select',required:true,label:L3('Sex','Пол','Sex'),options:[{v:'m',l:L3('Male','Мужской','Masculin')},{v:'f',l:L3('Female','Женский','Feminin')}]},
+   {id:'maritalStatus',type:'select',required:true,label:L3('Marital status','Семейное положение','Starea civilă'),options:[
+     {v:'single',l:L3('Single','Не в браке','Necăsătorit(ă)')},{v:'married',l:L3('Married','В браке','Căsătorit(ă)')},
+     {v:'divorced',l:L3('Divorced','Разведён(а)','Divorțat(ă)')},{v:'widowed',l:L3('Widowed','Вдовец / вдова','Văduv(ă)')},
+     {v:'separated',l:L3('Legally separated','Раздельное проживание','Separat legal')}]},
+   {id:'dob',type:'date',required:true,label:L3('Date of birth','Дата рождения','Data nașterii')},
+   {id:'pobCity',type:'text',required:true,label:L3('City of birth','Город рождения','Orașul nașterii')},
+   {id:'pobCountry',type:'text',required:true,label:L3('Country of birth','Страна рождения','Țara nașterii')},
+   {id:'photo',type:'file',label:L3('Photo for visa application','Фото для визовой заявки','Fotografie pentru cererea de viză')},
+ ]},
+ { id:'personal2', title:L3('Personal Information II','Личные данные II','Date personale II'), fields:[
+   {id:'nationality',type:'text',required:true,label:L3('Nationality','Гражданство','Cetățenia')},
+   {id:'otherNationality',type:'radio',label:L3('Do you hold another nationality?','Есть ли у вас другое гражданство?','Deții altă cetățenie?')},
+   {id:'otherNationalityCountry',type:'text',conditional:{on:'otherNationality',eq:'yes'},label:L3('Which country','Какая страна','Ce țară')},
+   {id:'nationalIdNumber',type:'text',label:L3('National identification number (if any)','Номер удостоверения личности (если есть)','Numărul de identitate (dacă există)')},
+   {id:'usSSN',type:'text',label:L3('U.S. Social Security Number (if any)','Номер социального страхования США (если есть)','Numărul de securitate socială SUA (dacă există)')},
+   {id:'usTaxId',type:'text',label:L3('U.S. Taxpayer ID Number (if any)','Налоговый номер США (если есть)','Codul fiscal SUA (dacă există)')},
+ ]},
+ { id:'travel', title:L3('Travel Information','Информация о поездке','Informații despre călătorie'), fields:[
+   {id:'purpose',type:'select',required:true,label:L3('Purpose of trip','Цель поездки','Scopul călătoriei'),options:[
+     {v:'b1b2',l:L3('Tourism / Business (B1/B2)','Туризм / бизнес (B1/B2)','Turism / afaceri (B1/B2)')},
+     {v:'f1',l:L3('Student (F1)','Учёба (F1)','Studii (F1)')},
+     {v:'j1',l:L3('Exchange visitor (J1)','Обмен (J1)','Schimb de experiență (J1)')},
+     {v:'h',l:L3('Temporary worker (H)','Временная работа (H)','Muncă temporară (H)')},
+     {v:'c',l:L3('Transit (C)','Транзит (C)','Tranzit (C)')},
+     {v:'other',l:L3('Other','Другое','Altul')}]},
+   {id:'specificPlans',type:'radio',required:true,label:L3('Do you have specific travel plans already?','Есть ли уже конкретные даты поездки?','Ai deja planuri concrete de călătorie?')},
+   {id:'arrivalDate',type:'date',conditional:{on:'specificPlans',eq:'yes'},label:L3('Intended date of arrival','Планируемая дата прибытия','Data planificată de sosire')},
+   {id:'lengthOfStay',type:'text',conditional:{on:'specificPlans',eq:'yes'},label:L3('Intended length of stay','Планируемая продолжительность пребывания','Durata planificată a șederii')},
+   {id:'arrivalApprox',type:'text',conditional:{on:'specificPlans',eq:'no'},label:L3('Approximate arrival date','Примерная дата прибытия','Data aproximativă de sosire')},
+   {id:'usAddress',type:'textarea',required:true,label:L3('Address where you will stay in the U.S.','Адрес проживания в США','Adresa unde vei sta în SUA')},
+   {id:'whoPays',type:'select',label:L3('Who is paying for the trip','Кто оплачивает поездку','Cine plătește călătoria'),options:[
+     {v:'self',l:L3('Myself','Я сам(а)','Eu însumi/însămi')},{v:'other',l:L3('Another person','Другое лицо','Altă persoană')},
+     {v:'employer',l:L3('Employer','Работодатель','Angajator')},{v:'otherorg',l:L3('Other organization','Другая организация','Altă organizație')}]},
+ ]},
+ { id:'companions', title:L3('Travel Companions','Спутники по поездке','Însoțitori de călătorie'), fields:[
+   {id:'travelingWithOthers',type:'radio',required:true,label:L3('Are other people traveling with you?','Едут ли с вами другие люди?','Călătoresc alte persoane cu tine?')},
+   {id:'companionsList',type:'textarea',conditional:{on:'travelingWithOthers',eq:'yes'},label:L3('List their names and relationship to you','Укажите их имена и кем они вам приходятся','Menționează numele lor și relația cu tine')},
+   {id:'travelingAsGroup',type:'radio',label:L3('Are you traveling as part of a group or organization (e.g. a tour group)?','Едете ли вы в составе группы или организации (например, тургруппы)?','Călătorești ca parte a unui grup sau organizații (de ex. grup turistic)?')},
+   {id:'groupName',type:'text',conditional:{on:'travelingAsGroup',eq:'yes'},label:L3('Group or organization name','Название группы или организации','Numele grupului sau organizației')},
+ ]},
+ { id:'previousus', title:L3('Previous U.S. Travel','Предыдущие поездки в США','Călătorii anterioare în SUA'), fields:[
+   {id:'beenToUS',type:'radio',required:true,label:L3('Have you ever been to the U.S.?','Бывали ли вы ранее в США?','Ai fost vreodată în SUA?')},
+   {id:'lastVisitDate',type:'date',conditional:{on:'beenToUS',eq:'yes'},label:L3('Date of last visit','Дата последнего визита','Data ultimei vizite')},
+   {id:'previousVisaNumber',type:'text',conditional:{on:'beenToUS',eq:'yes'},label:L3('Previous visa number (if known)','Номер предыдущей визы (если известен)','Numărul vizei anterioare (dacă este cunoscut)')},
+   {id:'usDriverLicense',type:'radio',label:L3('Do you hold, or have you ever held, a U.S. driver’s license?','Есть ли у вас или был ли когда-либо водительские права США?','Deții sau ai deținut vreodată un permis de conducere american?')},
+   {id:'usDriverLicenseNumber',type:'text',conditional:{on:'usDriverLicense',eq:'yes'},label:L3('License number','Номер прав','Numărul permisului')},
+   {id:'usDriverLicenseState',type:'text',conditional:{on:'usDriverLicense',eq:'yes'},label:L3('State that issued it','Штат, выдавший права','Statul emitent')},
+   {id:'visaRefused',type:'radio',required:true,label:L3('Have you ever been refused a U.S. visa?','Отказывали ли вам когда-либо в визе США?','Ți-a fost refuzată vreodată o viză SUA?')},
+   {id:'refusedDetails',type:'textarea',conditional:{on:'visaRefused',eq:'yes'},label:L3('Please explain','Пожалуйста, опишите','Te rugăm explică')},
+   {id:'petitionFiled',type:'radio',label:L3('Has anyone ever filed an immigrant petition on your behalf?','Подавал ли кто-либо иммиграционную петицию от вашего имени?','A depus cineva vreodată o petiție de imigrare în numele tău?')},
+ ]},
+ { id:'address', title:L3('Address & Contact','Адрес и контакты','Adresă și contact'), fields:[
+   {id:'homeAddress',type:'textarea',required:true,label:L3('Home address','Домашний адрес','Adresa de domiciliu')},
+   {id:'mailingSame',type:'radio',label:L3('Is your mailing address the same as your home address?','Совпадает ли почтовый адрес с домашним?','Adresa poștală este aceeași cu cea de domiciliu?')},
+   {id:'mailingAddress',type:'textarea',conditional:{on:'mailingSame',eq:'no'},label:L3('Mailing address','Почтовый адрес','Adresa poștală')},
+   {id:'phone',type:'tel',required:true,label:L3('Phone number','Номер телефона','Numărul de telefon')},
+   {id:'email',type:'email',required:true,label:L3('Email address','Электронная почта','Adresa de email')},
+   {id:'socialMedia',type:'text',label:L3('Social media (platform: username)','Соцсети (платформа: имя пользователя)','Rețele sociale (platformă: utilizator)')},
+ ]},
+ { id:'passport', title:L3('Passport Information','Паспортные данные','Date pașaport'), fields:[
+   {id:'passportType',type:'select',label:L3('Passport type','Тип паспорта','Tipul pașaportului'),options:[
+     {v:'regular',l:L3('Regular','Обычный','Obișnuit')},{v:'official',l:L3('Official','Служебный','Oficial')},
+     {v:'diplomatic',l:L3('Diplomatic','Дипломатический','Diplomatic')},{v:'other',l:L3('Other','Другое','Altul')}]},
+   {id:'passportNumber',type:'text',required:true,label:L3('Passport number','Номер паспорта','Numărul pașaportului')},
+   {id:'passportIssueCountry',type:'text',required:true,label:L3('Country that issued passport','Страна, выдавшая паспорт','Țara emitentă a pașaportului')},
+   {id:'passportIssueDate',type:'date',required:true,label:L3('Issue date','Дата выдачи','Data emiterii')},
+   {id:'passportExpiryDate',type:'date',required:true,label:L3('Expiration date','Дата окончания срока действия','Data expirării')},
+   {id:'passportLost',type:'radio',label:L3('Has your passport ever been lost or stolen?','Терялся ли ваш паспорт или был украден?','Pașaportul tău a fost vreodată pierdut sau furat?')},
+   {id:'lostDetails',type:'text',conditional:{on:'passportLost',eq:'yes'},label:L3('Please explain','Пожалуйста, опишите','Te rugăm explică')},
+   {id:'passportScan',type:'file',label:L3('Scan of passport data page','Скан паспорта (страница с фото)','Scanul paginii cu date din pașaport')},
+ ]},
+ { id:'uscontact', title:L3('U.S. Contact Person','Контакт в США','Persoana de contact din SUA'), fields:[
+   {id:'contactName',type:'text',label:L3('Contact person or organization','Контактное лицо или организация','Persoana sau organizația de contact')},
+   {id:'contactRelationship',type:'text',label:L3('Relationship to you','Кем приходится вам','Relația cu tine')},
+   {id:'contactAddress',type:'textarea',label:L3('Address','Адрес','Adresa')},
+   {id:'contactPhone',type:'tel',label:L3('Phone number','Номер телефона','Numărul de telefon')},
+   {id:'contactEmail',type:'email',label:L3('Email address','Электронная почта','Adresa de email')},
+ ]},
+ { id:'family', title:L3('Family Information','Информация о семье','Informații despre familie'), fields:[
+   {id:'fatherName',type:'text',label:L3('Father’s full name','Полное имя отца','Numele complet al tatălui')},
+   {id:'fatherDob',type:'date',label:L3('Father’s date of birth','Дата рождения отца','Data nașterii tatălui')},
+   {id:'fatherInUS',type:'radio',label:L3('Is your father in the U.S.?','Находится ли отец в США?','Tatăl tău este în SUA?')},
+   {id:'motherName',type:'text',label:L3('Mother’s full name','Полное имя матери','Numele complet al mamei')},
+   {id:'motherDob',type:'date',label:L3('Mother’s date of birth','Дата рождения матери','Data nașterii mamei')},
+   {id:'motherInUS',type:'radio',label:L3('Is your mother in the U.S.?','Находится ли мать в США?','Mama ta este în SUA?')},
+   {id:'spouseName',type:'text',conditional:{on:'maritalStatus',eq:'married'},label:L3('Spouse’s full name','Полное имя супруга(и)','Numele complet al soțului/soției')},
+   {id:'otherRelativesUS',type:'radio',label:L3('Do you have other relatives in the U.S.?','Есть ли у вас другие родственники в США?','Ai alte rude în SUA?')},
+   {id:'relativesDetails',type:'textarea',conditional:{on:'otherRelativesUS',eq:'yes'},label:L3('Please list them','Пожалуйста, перечислите','Te rugăm menționează-i')},
+ ]},
+ { id:'work', title:L3('Work / Education','Работа / образование','Muncă / educație'), fields:[
+   {id:'occupation',type:'text',label:L3('Present occupation','Текущая профессия','Ocupația actuală')},
+   {id:'employerName',type:'text',label:L3('Employer / school name','Название работодателя / учебного заведения','Numele angajatorului / instituției')},
+   {id:'employerAddress',type:'textarea',label:L3('Employer / school address','Адрес работодателя / учебного заведения','Adresa angajatorului / instituției')},
+   {id:'monthlyIncome',type:'text',label:L3('Monthly income (if employed)','Ежемесячный доход (если работаете)','Venitul lunar (dacă este cazul)')},
+   {id:'educationLevel',type:'select',label:L3('Highest education level','Уровень образования','Nivelul de educație'),options:[
+     {v:'primary',l:L3('Primary','Начальное','Primar')},{v:'secondary',l:L3('Secondary','Среднее','Secundar')},
+     {v:'university',l:L3('University','Высшее','Universitar')},{v:'postgraduate',l:L3('Postgraduate','Послевузовское','Postuniversitar')}]},
+   {id:'institutionName',type:'text',label:L3('Institution name','Название учебного заведения','Numele instituției')},
+ ]},
+ { id:'prevworkedu', title:L3('Additional Work / Education','Дополнительно о работе и образовании','Muncă / educație suplimentare'), fields:[
+   {id:'previousEmployer1Name',type:'text',label:L3('Previous employer name (last 5 years, if any)','Название предыдущего работодателя (за 5 лет, если был)','Numele angajatorului anterior (ultimii 5 ani, dacă e cazul)')},
+   {id:'previousEmployer1JobTitle',type:'text',label:L3('Job title','Должность','Funcția')},
+   {id:'previousEmployer1Dates',type:'text',label:L3('Employment dates (from \\u2013 to)','Даты работы (с \\u2013 по)','Perioada de angajare (de la \\u2013 până la)')},
+   {id:'languagesSpoken',type:'text',label:L3('Languages you speak','Языки, которыми владеете','Limbile pe care le vorbești')},
+   {id:'traveledLast5Years',type:'radio',label:L3('Have you traveled to any other countries in the last five years?','Посещали ли вы другие страны за последние пять лет?','Ai călătorit în alte țări în ultimii cinci ani?')},
+   {id:'countriesVisited',type:'textarea',conditional:{on:'traveledLast5Years',eq:'yes'},label:L3('Which countries','Какие страны','Ce țări')},
+   {id:'professionalOrgMembership',type:'radio',label:L3('Do you belong to any professional, social, or civic organizations?','Состоите ли вы в профессиональных, общественных или гражданских организациях?','Aparții unor organizații profesionale, sociale sau civice?')},
+   {id:'orgDetails',type:'textarea',conditional:{on:'professionalOrgMembership',eq:'yes'},label:L3('Please list them','Пожалуйста, перечислите','Te rugăm menționează-le')},
+   {id:'specializedSkills',type:'radio',label:L3('Do you have specialized skills or training in firearms, explosives, nuclear, biological, or chemical fields?','Есть ли у вас специализированные навыки в области оружия, взрывчатых веществ, ядерной, биологической или химической сферы?','Ai competențe specializate în arme, explozivi, domeniul nuclear, biologic sau chimic?')},
+   {id:'specializedSkillsDetails',type:'textarea',conditional:{on:'specializedSkills',eq:'yes'},label:L3('Please explain','Пожалуйста, опишите','Te rugăm explică')},
+   {id:'militaryService',type:'radio',label:L3('Have you ever served in the military?','Служили ли вы когда-либо в армии?','Ai efectuat vreodată serviciul militar?')},
+   {id:'militaryDetails',type:'textarea',conditional:{on:'militaryService',eq:'yes'},label:L3('Country, branch, rank, dates, specialty','Страна, род войск, звание, даты, специальность','Țara, arma, gradul, perioada, specialitatea')},
+   {id:'paramilitaryInvolvement',type:'radio',label:L3('Have you ever served in or been involved with a paramilitary unit, vigilante unit, rebel group, guerrilla group, or insurgent organization?','Служили ли вы или были ли связаны с военизированным формированием, повстанческой или партизанской группой?','Ai fost vreodată implicat într-o unitate paramilitară, grup rebel sau de gherilă?')},
+ ]},
+ { id:'security', title:L3('Security & Background','Безопасность и биография','Securitate și antecedente'), fields:[
+   {id:'h_health',type:'heading',label:L3('Health','Здоровье','Sănătate')},
+   {id:'communicableDisease',type:'radio',label:L3('Do you have a communicable disease of public health significance?','Есть ли у вас заразное заболевание, представляющее опасность для здоровья населения?','Ai o boală transmisibilă de importanță pentru sănătatea publică?')},
+   {id:'mentalDisorder',type:'radio',label:L3('Do you have a mental or physical disorder that has posed or may pose a threat to yourself or others?','Есть ли у вас психическое или физическое расстройство, представляющее угрозу для вас или окружающих?','Ai o afecțiune mentală sau fizică ce prezintă un pericol pentru tine sau alții?')},
+   {id:'drugAbuser',type:'radio',label:L3('Are you or have you ever been a drug abuser or addict?','Являетесь ли вы или являлись ли когда-либо наркозависимым?','Ești sau ai fost vreodată dependent de droguri?')},
+   {id:'h_criminal',type:'heading',label:L3('Criminal history','Судимость','Antecedente penale')},
+   {id:'criminalRecord',type:'radio',label:L3('Have you ever been arrested or convicted of any offense?','Были ли вы когда-либо арестованы или осуждены?','Ai fost vreodată arestat(ă) sau condamnat(ă)?')},
+   {id:'drugViolation',type:'radio',label:L3('Have you ever violated any law related to controlled substances?','Нарушали ли вы когда-либо законы, связанные с наркотическими веществами?','Ai încălcat vreodată legi legate de substanțe controlate?')},
+   {id:'prostitution',type:'radio',label:L3('Have you ever been involved in prostitution or vice within the past 10 years?','Были ли вы вовлечены в проституцию за последние 10 лет?','Ai fost vreodată implicat în prostituție în ultimii 10 ani?')},
+   {id:'moneyLaundering',type:'radio',label:L3('Have you ever been involved in money laundering?','Были ли вы вовлечены в отмывание денег?','Ai fost vreodată implicat în spălare de bani?')},
+   {id:'humanTrafficking',type:'radio',label:L3('Have you committed or conspired to commit human trafficking?','Совершали ли вы торговлю людьми или сговор с этой целью?','Ai comis sau conspirat pentru trafic de persoane?')},
+   {id:'traffickingBenefit',type:'radio',label:L3('Have you knowingly benefited from a family member’s trafficking activities?','Извлекали ли вы выгоду из деятельности родственника, связанной с торговлей людьми?','Ai beneficiat cu bună știință de activitățile de trafic ale unui membru al familiei?')},
+   {id:'h_security',type:'heading',label:L3('Security and terrorism','Безопасность и терроризм','Securitate și terorism')},
+   {id:'espionage',type:'radio',label:L3('Have you sought to engage in espionage, sabotage, export control violations, or other illegal activity in the U.S.?','Пытались ли вы заниматься шпионажем, саботажем или иной незаконной деятельностью в США?','Ai încercat să te implici în spionaj, sabotaj sau alte activități ilegale în SUA?')},
+   {id:'terroristActivity',type:'radio',label:L3('Have you sought to engage in terrorist activities?','Пытались ли вы заниматься террористической деятельностью?','Ai încercat să te implici în activități teroriste?')},
+   {id:'terroristSupport',type:'radio',label:L3('Have you provided financial assistance or other support to terrorist activities or organizations?','Оказывали ли вы финансовую или иную поддержку террористической деятельности или организациям?','Ai oferit sprijin financiar sau de altă natură unor activități sau organizații teroriste?')},
+   {id:'terroristOrgMember',type:'radio',label:L3('Are you a member or representative of a terrorist organization?','Являетесь ли вы членом или представителем террористической организации?','Ești membru sau reprezentant al unei organizații teroriste?')},
+   {id:'familyTerroristActivity',type:'radio',label:L3('Has a family member engaged in terrorist activity in the last five years?','Занимался ли член вашей семьи террористической деятельностью за последние пять лет?','A fost implicat un membru al familiei tale în activități teroriste în ultimii cinci ani?')},
+   {id:'genocide',type:'radio',label:L3('Have you ever ordered, incited, assisted, or otherwise participated in genocide?','Приказывали ли, подстрекали, помогали или иным образом участвовали в геноциде?','Ai ordonat, incitat, ajutat sau participat în vreun fel la genocid?')},
+   {id:'torture',type:'radio',label:L3('Have you committed, ordered, incited, assisted, or otherwise participated in torture?','Совершали, приказывали, подстрекали, помогали или участвовали в пытках?','Ai comis, ordonat, incitat sau participat la tortură?')},
+   {id:'extrajudicialKillings',type:'radio',label:L3('Have you committed extrajudicial killings, political killings, or other acts of violence?','Совершали ли вы внесудебные казни, политические убийства или иные акты насилия?','Ai comis execuții extrajudiciare, asasinate politice sau alte acte de violență?')},
+   {id:'childSoldier',type:'radio',label:L3('Have you recruited or used child soldiers?','Вербовали ли вы детей-солдат или использовали их?','Ai recrutat sau folosit copii soldați?')},
+   {id:'religiousFreedomViolation',type:'radio',label:L3('Have you engaged in particularly severe violations of religious freedom?','Совершали ли вы особо тяжкие нарушения свободы вероисповедания?','Ai comis încălcări deosebit de grave ale libertății religioase?')},
+   {id:'forcedPopulationControl',type:'radio',label:L3('Have you been directly involved in coercive population control (forced abortion or sterilization)?','Были ли вы непосредственно вовлечены в принудительный контроль над рождаемостью (аборты, стерилизация)?','Ai fost implicat direct în controlul demografic coercitiv (avort sau sterilizare forțată)?')},
+   {id:'organTransplant',type:'radio',label:L3('Have you been involved in the coercive transplantation of human organs or bodily tissue?','Были ли вы вовлечены в принудительную трансплантацию органов или тканей человека?','Ai fost implicat în transplantul coercitiv de organe sau țesuturi umane?')},
+   {id:'h_immigration',type:'heading',label:L3('Immigration violations','Иммиграционные нарушения','Încălcări de imigrare')},
+   {id:'immigrationViolation',type:'radio',label:L3('Have you ever violated the terms of a U.S. visa?','Нарушали ли вы когда-либо условия визы США?','Ai încălcat vreodată condițiile unei vize SUA?')},
+   {id:'visaFraud',type:'radio',label:L3('Have you sought to obtain a visa or enter the U.S. by fraud or misrepresentation?','Пытались ли вы получить визу или въехать в США обманным путём?','Ai încercat să obții o viză sau să intri în SUA prin fraudă?')},
+   {id:'removalProceedings',type:'radio',label:L3('Have you failed to attend a hearing on removal or deportation within the last five years?','Не являлись ли вы на слушание по депортации за последние пять лет?','Nu te-ai prezentat la o audiere de expulzare în ultimii cinci ani?')},
+   {id:'previouslyDeported',type:'radio',label:L3('Have you ever been removed or deported from any country?','Депортировали ли вас когда-либо из какой-либо страны?','Ai fost vreodată expulzat dintr-o țară?')},
+   {id:'h_misc',type:'heading',label:L3('Other','Прочее','Altele')},
+   {id:'childCustody',type:'radio',label:L3('Have you withheld custody of a U.S. citizen child from a person granted legal custody?','Удерживали ли вы ребёнка \\u2013 гражданина США от лица, которому присуждена опека?','Ai reținut custodia unui copil cetățean SUA de la persoana căreia i-a fost acordată custodia legală?')},
+   {id:'votingViolation',type:'radio',label:L3('Have you ever voted in the United States in violation of any law or regulation?','Голосовали ли вы в США в нарушение закона?','Ai votat vreodată în SUA cu încălcarea legii?')},
+   {id:'renouncedCitizenship',type:'radio',label:L3('Have you ever renounced U.S. citizenship to avoid taxation?','Отказывались ли вы от гражданства США с целью уклонения от налогов?','Ai renunțat vreodată la cetățenia SUA pentru a evita impozitarea?')},
+ ]},
+];
+
+let state = {
+  view:'intro',
+  lang:'ru',
+  stepIndex:0,
+  answers:{},
+  files:{},
+  visitedSections:new Set(),
+  refCode:null,
+  submitting:false,
+  submitError:false,
+};
+
+function t(){ return UI[state.lang]; }
+function fieldVisible(f){
+  if(!f.conditional) return true;
+  return state.answers[f.conditional.on] === f.conditional.eq;
+}
+function sectionValid(section){
+  return section.fields.every(f=>{
+    if(!fieldVisible(f)) return true;
+    if(!f.required) return true;
+    const v = state.answers[f.id];
+    return v !== undefined && v !== '';
+  });
+}
+
+async function submitApplication(){
+  state.submitting = true;
+  state.submitError = false;
+  render();
+  try{
+    const fd = new FormData();
+    fd.append('lang', state.lang);
+    fd.append('answers', JSON.stringify(state.answers));
+    Object.keys(state.files).forEach(fieldId=>{
+      fd.append(fieldId, state.files[fieldId], state.files[fieldId].name);
+    });
+    const resp = await fetch('/api/submit', { method:'POST', body: fd });
+    const data = await resp.json();
+    if(!resp.ok || !data.ok) throw new Error('submit_failed');
+    state.refCode = data.ref;
+    state.submitting = false;
+    state.view = 'success';
+    render();
+  }catch(e){
+    state.submitting = false;
+    state.submitError = true;
+    render();
+  }
+}
+
+function fieldRow(f){
+  const label = f.label[state.lang];
+  if(f.type === 'heading'){
+    return `<h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--brass);margin:22px 0 10px;border-top:1px solid var(--line);padding-top:16px;">${label}</h3>`;
+  }
+  const val = state.answers[f.id] || '';
+  const req = f.required ? '<span class="required-mark">*</span>' : '';
+  let inputHtml = '';
+  if(f.type === 'radio'){
+    const yesSel = val === 'yes' ? 'selected' : '';
+    const noSel = val === 'no' ? 'selected' : '';
+    inputHtml = `<div class="radio-row">
+      <button type="button" class="radio-pill ${yesSel}" data-field="${f.id}" data-val="yes">${t().yes}</button>
+      <button type="button" class="radio-pill ${noSel}" data-field="${f.id}" data-val="no">${t().no}</button>
+    </div>`;
+  } else if(f.type === 'select'){
+    const opts = f.options.map(o=>`<option value="${o.v}" ${val===o.v?'selected':''}>${o.l[state.lang]}</option>`).join('');
+    inputHtml = `<select data-field="${f.id}"><option value="">—</option>${opts}</select>`;
+  } else if(f.type === 'textarea'){
+    inputHtml = `<textarea data-field="${f.id}">${val}</textarea>`;
+  } else if(f.type === 'file'){
+    const fileName = state.files[f.id] ? state.files[f.id].name : '';
+    inputHtml = `<input type="file" data-file="${f.id}" accept="image/*,application/pdf">
+      <div class="hint" style="font-size:11.5px;color:var(--ink-soft);margin-top:4px;">${fileName ? fileName : t().uploadHint}</div>`;
+  } else {
+    inputHtml = `<input type="${f.type}" data-field="${f.id}" value="${val.replace(/"/g,'&quot;')}">`;
+  }
+  return `<div class="field">
+    <label>${label}${req}</label>
+    ${inputHtml}
+  </div>`;
+}
+
+function renderTopbar(){
+  const langBtns = Object.keys(LANGS).map(code=>
+    `<button class="${state.lang===code?'active':''}" data-lang="${code}">${LANGS[code]}</button>`
+  ).join('');
+  return `<div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">DS</div>
+      <div class="brand-text"><h1>${t().appTitle}</h1><p>${t().appSub}</p></div>
+    </div>
+    <div class="lang-switch">${langBtns}</div>
+  </div>`;
+}
+
+function renderIntro(){
+  return `<div class="intro">
+    <div class="intro-stamp"><span>Visa<br>intake</span></div>
+    <h2>${t().introTitle}</h2>
+    <p>${t().introBody}</p>
+    <button class="btn btn-primary" id="start-btn">${t().start}</button>
+  </div>`;
+}
+
+function renderRail(){
+  const items = SECTIONS.map((s,i)=>{
+    let cls = '';
+    if(i === state.stepIndex) cls = 'current';
+    else if(state.visitedSections.has(s.id)) cls = 'done';
+    return `<div class="rail-item ${cls}" data-step="${i}">
+      <span class="rail-stamp">${cls==='done'?'&#10003;':(i+1)}</span>
+      <span>${s.title[state.lang]}</span>
+    </div>`;
+  }).join('');
+  return `<div class="rail">${items}
+    <div class="rail-item ${state.stepIndex===SECTIONS.length?'current':''}" data-step="${SECTIONS.length}">
+      <span class="rail-stamp">${SECTIONS.length+1}</span><span>${t().review}</span>
+    </div>
+  </div>`;
+}
+
+function renderWizardPanel(){
+  if(state.stepIndex >= SECTIONS.length) return renderReview();
+  const section = SECTIONS[state.stepIndex];
+  const fieldsHtml = section.fields.filter(fieldVisible).map(f=>{
+    if(f.conditional) return `<div class="conditional">${fieldRow(f)}</div>`;
+    return fieldRow(f);
+  }).join('');
+  return `<div class="panel">
+    <div class="step-count">${t().step} ${state.stepIndex+1} ${t().of} ${SECTIONS.length+1}</div>
+    <h2>${section.title[state.lang]}</h2>
+    <div style="margin-top:18px;">${fieldsHtml}</div>
+  </div>`;
+}
+
+function renderReview(){
+  const groups = SECTIONS.map(section=>{
+    const rows = section.fields.filter(fieldVisible).filter(f=> f.type==='file' ? state.files[f.id] : state.answers[f.id]).map(f=>{
+      let v;
+      if(f.type === 'file') v = state.files[f.id] ? state.files[f.id].name : '';
+      else {
+        v = state.answers[f.id];
+        if(f.type === 'radio') v = v === 'yes' ? t().yes : t().no;
+        if(f.type === 'select'){ const opt=f.options.find(o=>o.v===v); v = opt?opt.l[state.lang]:v; }
+      }
+      return `<div class="review-row"><span class="rk">${f.label[state.lang]}</span><span class="rv">${v}</span></div>`;
+    }).join('');
+    if(!rows) return '';
+    return `<div class="review-group">
+      <h3>${section.title[state.lang]} <button data-jump="${SECTIONS.indexOf(section)}">${t().edit}</button></h3>
+      ${rows}
+    </div>`;
+  }).join('');
+  return `<div class="panel">
+    <div class="step-count">${t().step} ${SECTIONS.length+1} ${t().of} ${SECTIONS.length+1}</div>
+    <h2>${t().review}</h2>
+    <div style="margin-top:18px;">${groups}</div>
+  </div>`;
+}
+
+function renderFooterNav(){
+  const isReview = state.stepIndex >= SECTIONS.length;
+  const backDisabled = state.stepIndex === 0 ? 'disabled' : '';
+  const nextLabel = isReview ? (state.submitting ? t().submitting : t().submit) : t().next;
+  const nextBtnClass = isReview ? 'btn-stamp' : 'btn-primary';
+  const nextDisabled = state.submitting ? 'disabled' : '';
+  return `<div class="footer-nav">
+    <button class="btn btn-ghost" id="back-btn" ${backDisabled}>${t().back}</button>
+    <span class="progress-text">${state.stepIndex+1} / ${SECTIONS.length+1}</span>
+    <button class="btn ${nextBtnClass}" id="next-btn" ${nextDisabled}>${nextLabel}</button>
+  </div>`;
+}
+
+function renderWizard(){
+  const errorHtml = state.submitError ? `<div class="error-box">${t().errorMsg}</div>` : '';
+  return `<div class="wizard">
+    ${renderRail()}
+    <div>
+      ${renderWizardPanel()}
+      ${state.stepIndex >= SECTIONS.length ? errorHtml : ''}
+      ${renderFooterNav()}
+    </div>
+  </div>`;
+}
+
+function renderSuccess(){
+  return `<div class="success">
+    <div class="success-stamp"><span>Received</span></div>
+    <h2>${t().successTitle}</h2>
+    <p style="color:var(--ink-soft);max-width:440px;margin:12px auto 0;font-size:14.5px;line-height:1.6;">${t().successBody}</p>
+    <div class="ref-code mono">${t().refLabel}: ${state.refCode}</div>
+    <div><button class="btn btn-ghost" id="restart-btn">${t().newApp}</button></div>
+  </div>`;
+}
+
+function render(){
+  const root = document.getElementById('root');
+  let body = '';
+  if(state.view === 'intro') body = renderIntro();
+  else if(state.view === 'wizard') body = renderWizard();
+  else if(state.view === 'success') body = renderSuccess();
+  root.innerHTML = renderTopbar() + body;
+  attachHandlers();
+}
+
+function attachHandlers(){
+  document.querySelectorAll('[data-lang]').forEach(el=>{
+    el.addEventListener('click', ()=>{ state.lang = el.getAttribute('data-lang'); render(); });
+  });
+  const startBtn = document.getElementById('start-btn');
+  if(startBtn) startBtn.addEventListener('click', ()=>{ state.view='wizard'; state.stepIndex=0; render(); });
+
+  document.querySelectorAll('[data-field]').forEach(el=>{
+    el.addEventListener('input', ()=>{ state.answers[el.getAttribute('data-field')] = el.value; });
+    el.addEventListener('change', ()=>{ state.answers[el.getAttribute('data-field')] = el.value; });
+  });
+  document.querySelectorAll('[data-file]').forEach(el=>{
+    el.addEventListener('change', ()=>{
+      const id = el.getAttribute('data-file');
+      if(el.files && el.files[0]){ state.files[id] = el.files[0]; render(); }
+    });
+  });
+  document.querySelectorAll('.radio-pill').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.answers[el.getAttribute('data-field')] = el.getAttribute('data-val');
+      render();
+    });
+  });
+  document.querySelectorAll('[data-step]').forEach(el=>{
+    el.addEventListener('click', ()=>{ state.stepIndex = parseInt(el.getAttribute('data-step')); render(); });
+  });
+  document.querySelectorAll('[data-jump]').forEach(el=>{
+    el.addEventListener('click', ()=>{ state.stepIndex = parseInt(el.getAttribute('data-jump')); render(); });
+  });
+  const backBtn = document.getElementById('back-btn');
+  if(backBtn) backBtn.addEventListener('click', ()=>{
+    if(state.stepIndex > 0){ state.stepIndex--; render(); }
+  });
+  const nextBtn = document.getElementById('next-btn');
+  if(nextBtn) nextBtn.addEventListener('click', ()=>{
+    if(state.stepIndex < SECTIONS.length){
+      const section = SECTIONS[state.stepIndex];
+      state.visitedSections.add(section.id);
+      state.stepIndex++;
+      render();
+    } else {
+      submitApplication();
+    }
+  });
+  const restartBtn = document.getElementById('restart-btn');
+  if(restartBtn) restartBtn.addEventListener('click', ()=>{
+    state.answers = {}; state.files = {}; state.visitedSections = new Set(); state.stepIndex = 0; state.view = 'intro'; render();
+  });
+}
+
+render();
+</script>
+</body>
+</html>
